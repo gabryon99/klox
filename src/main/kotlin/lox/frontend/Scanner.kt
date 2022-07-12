@@ -102,7 +102,7 @@ class Scanner(private val source: String) {
 
     private fun lexNumber() {
 
-        while (isDigit(peek())) advance();
+        while (isDigit(peek())) advance()
 
         if (peek() == '.' && isDigit(peekNext())) {
             advance()
@@ -119,12 +119,8 @@ class Scanner(private val source: String) {
 
         val text = source.substring(start, current)
 
-        var tokenType = keywords[text]
-        if (tokenType == null) {
-            tokenType = TokenType.IDENTIFIER
-        }
-
-        addToken(TokenType.IDENTIFIER)
+        val tokenType = keywords[text] ?: TokenType.IDENTIFIER
+        addToken(tokenType)
     }
 
     private fun scanToken() {

@@ -9,7 +9,7 @@ import kotlin.system.exitProcess
 class Lox {
     companion object {
 
-        var hadError = false
+        private var hadError = false
 
         fun error(line: Int, message: String) {
             report(line, "", message)
