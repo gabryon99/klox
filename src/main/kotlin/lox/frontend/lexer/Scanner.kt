@@ -191,6 +191,10 @@ class Scanner(private val source: String) {
                 lexString()
             }
 
+            0.toChar() -> {
+                addToken(TokenType.EOF)
+            }
+
             else -> {
                 if (isDigit(ch)) {
                     lexNumber()
@@ -211,6 +215,9 @@ class Scanner(private val source: String) {
             start = current
             scanToken()
         }
+
+        // Small temporarily hack
+        addToken(TokenType.EOF)
 
         return tokens
     }

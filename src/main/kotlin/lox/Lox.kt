@@ -1,6 +1,10 @@
 package lox
 
+import lox.frontend.ast.AstIpnPrinter
+import lox.frontend.common.Token
+import lox.frontend.common.TokenType
 import lox.frontend.lexer.Scanner
+import lox.frontend.parser.Parser
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.nio.charset.Charset
@@ -12,6 +16,16 @@ class Lox {
     companion object {
 
         private var hadError = false
+
+        @JvmStatic
+        fun error(token: Token, message: String) {
+            if (token.tokenType == TokenType.EOF) {
+                report(token.line, " at end", message)
+            }
+            else {
+                report(token.line, "at '${token.lexeme}'", message)
+            }
+        }
 
         @JvmStatic
         fun error(line: Int, message: String) {
@@ -29,9 +43,15 @@ class Lox {
             val scanner = Scanner(source)
             val tokens = scanner.scanTokens()
 
-            for (token in tokens) {
-                println(token)
+            val parser = Parser(tokens)
+
+            val expr = parser.parse()
+
+            if (hadError) {
+                return
             }
+
+            println(expr?.let { AstIpnPrinter().print(it) })
         }
 
         @JvmStatic
