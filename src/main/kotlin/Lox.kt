@@ -11,14 +11,17 @@ class Lox {
 
         private var hadError = false
 
+        @JvmStatic
         fun error(line: Int, message: String) {
             report(line, "", message)
         }
 
+        @JvmStatic
         fun report(line: Int, where: String, message: String) {
             println("[line ${line}] Error ${where}: $message")
         }
 
+        @JvmStatic
         private fun run(source: String) {
 
             val scanner = Scanner(source)
@@ -29,6 +32,7 @@ class Lox {
             }
         }
 
+        @JvmStatic
         fun runPrompt() {
 
             val input = InputStreamReader(System.`in`)
@@ -49,6 +53,16 @@ class Lox {
             }
         }
 
+        @JvmStatic
+        fun runFromString(source: String) {
+            run(source)
+
+            if (hadError) {
+                exitProcess(65)
+            }
+        }
+
+        @JvmStatic
         fun runFile(path: String) {
             val bytes = Files.readAllBytes(Paths.get(path))
             run(String(bytes, Charset.defaultCharset()))

@@ -146,6 +146,30 @@ class Scanner(private val source: String) {
                     // We are matching a comment, so we go until the end of the line.
                     while (peek() != '\n' && !isAtEnd()) advance()
                 }
+                else if (match('*')) {
+
+                    // We are matching a block comment.
+
+                    var nesting = 1
+
+                    while (nesting >= 1) {
+
+                        while ((peek() != '*' && peekNext() != '/') && !isAtEnd()) {
+                            advance()
+
+                            if (peekNext() == '/') {
+                                advance()
+                                if (peekNext() == '*') {
+                                    nesting++
+                                    advance()
+                                    advance()
+                                }
+                            }
+                        }
+
+                        nesting--
+                    }
+                }
                 else {
                     addToken(TokenType.SLASH)
                 }
