@@ -1,4 +1,4 @@
-package lox.frontend
+package lox.frontend.common
 
 enum class TokenType {
     // Single-character tokens.

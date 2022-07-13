@@ -1,4 +1,8 @@
-package lox.frontend
+package lox.frontend.lexer
+
+import lox.Lox
+import lox.frontend.common.Token
+import lox.frontend.common.TokenType
 
 class Scanner(private val source: String) {
 
