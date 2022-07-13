@@ -37,6 +37,15 @@ class AstIpnPrinter : Expr.Visitor<String> {
         return "$leftResult ${expr.operator.lexeme} $rightResult"
     }
 
+    override fun visitTernaryExpr(expr: Expr.Ternary): String {
+
+        val cond = expr.cond.accept(this)
+        val thenBranch = expr.thenBranch.accept(this)
+        val elseBranch = expr.elseBranch.accept(this)
+
+        return "($cond) ? $thenBranch : $elseBranch"
+    }
+
     override fun visitGroupingExpr(expr: Expr.Grouping): String {
         val exprVal = expr.exp.accept(this)
         return "( $exprVal )"

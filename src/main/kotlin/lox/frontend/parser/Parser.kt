@@ -50,16 +50,28 @@ class Parser(private val tokens: List<Token>) {
         return false
     }
 
-    private fun expression(): Expr = equality()
+    private fun expression(): Expr {
+        return equality();
+    }
 
     private fun equality(): Expr {
 
         var expr = comparison()
 
-        while (match(TokenType.BANG_EQUAL, TokenType.EQUAL_EQUAL)) {
-            val operator = previous()
-            val right = comparison()
-            expr = Expr.Binary(expr, operator, right)
+        // Check for ternary operator
+        if (match(TokenType.QUESTION)) {
+            val thenBranch = equality()
+            if (match(TokenType.COLON)) {
+                val elseBranch = equality()
+                expr = Expr.Ternary(expr, thenBranch, elseBranch)
+            }
+        }
+        else {
+            while (match(TokenType.BANG_EQUAL, TokenType.EQUAL_EQUAL)) {
+                val operator = previous()
+                val right = comparison()
+                expr = Expr.Binary(expr, operator, right)
+            }
         }
 
         return expr

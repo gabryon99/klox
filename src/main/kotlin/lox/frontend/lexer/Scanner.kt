@@ -138,7 +138,9 @@ class Scanner(private val source: String) {
             '-' -> addToken(TokenType.MINUS)
             '+' -> addToken(TokenType.PLUS)
             ';' -> addToken(TokenType.SEMICOLON)
+            ':' -> addToken(TokenType.COLON)
             '*' -> addToken(TokenType.STAR)
+            '?' -> addToken(TokenType.QUESTION)
 
             '!' -> addToken(if (match('=')) { TokenType.BANG_EQUAL } else { TokenType.BANG })
             '=' -> addToken(if (match('=')) { TokenType.EQUAL_EQUAL } else { TokenType.EQUAL })
