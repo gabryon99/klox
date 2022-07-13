@@ -1,5 +1,7 @@
 package lox
 
+import lox.backend.Interpreter
+import lox.backend.RuntimeError
 import lox.frontend.ast.AstIpnPrinter
 import lox.frontend.common.Token
 import lox.frontend.common.TokenType
@@ -15,7 +17,10 @@ import kotlin.system.exitProcess
 class Lox {
     companion object {
 
+        private val interpreter = Interpreter()
+
         private var hadError = false
+        private var hadRuntimeError = false
 
         @JvmStatic
         fun error(token: Token, message: String) {
@@ -51,7 +56,9 @@ class Lox {
                 return
             }
 
-            println(expr?.let { AstIpnPrinter().print(it) })
+            expr?.let {
+                interpreter.interpret(it)
+            }
         }
 
         @JvmStatic
@@ -92,6 +99,14 @@ class Lox {
             if (hadError) {
                 exitProcess(65)
             }
+            if (hadRuntimeError) {
+                exitProcess(70)
+            }
+        }
+
+        fun runtimeError(error: RuntimeError) {
+            System.err.println("${error.message}\n[line: ${error.token.line}]")
+            hadRuntimeError = true
         }
     }
 }
