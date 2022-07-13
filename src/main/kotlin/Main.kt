@@ -1,3 +1,4 @@
+import lox.Lox
 import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
@@ -6,7 +7,7 @@ fun main(args: Array<String>) {
             Lox.runPrompt() // Start REPL
         }
         1 -> {
-            Lox.runFile(args[1])
+            Lox.runFile(args[0])
         }
         else -> {
             println("usage: klox [script]")
