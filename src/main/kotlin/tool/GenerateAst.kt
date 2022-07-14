@@ -75,7 +75,7 @@ fun main(args: Array<String>) {
         "Var           ; val name: Token, val initializer: Expr?",
         "Block         ; val stmts: List<Stmt?>",
         "While         ; val condition: Expr, val body: Stmt",
-        "Break         ; ",
+        "Break         ; val token: Token",
         "Function      ; val name: Token, val params: List<Token>, val body: List<Stmt?>",
         "Return        ; val keyword: Token, val value: Expr?",
     ))

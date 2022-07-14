@@ -1,6 +1,7 @@
 package lox
 
 import lox.backend.Interpreter
+import lox.backend.Resolver
 import lox.backend.RuntimeError
 import lox.frontend.common.Token
 import lox.frontend.common.TokenType
@@ -29,6 +30,7 @@ class Lox {
             else {
                 report(token.line, "at '${token.lexeme}'", message)
             }
+            hadError = true
         }
 
         @JvmStatic
@@ -38,7 +40,7 @@ class Lox {
 
         @JvmStatic
         fun report(line: Int, where: String, message: String) {
-            System.err.println("[line ${line}] Error ${where}: $message")
+            System.err.println("[klox][line: ${line}] Error ${where}: $message")
         }
 
         @JvmStatic
@@ -60,9 +62,12 @@ class Lox {
 
             val statements = parser.parse()
 
-            if (hadError) {
-                return
-            }
+            if (hadError) return
+
+            val resolver = Resolver(interpreter)
+            resolver.resolve(statements)
+
+            if (hadError) return
 
             interpreter.interpret(statements)
         }
@@ -113,7 +118,7 @@ class Lox {
         }
 
         fun runtimeError(error: RuntimeError) {
-            System.err.println("[line: ${error.token.line}] ${error.message}")
+            System.err.println("[klox][line: ${error.token.line}] ${error.message}")
             hadRuntimeError = true
         }
     }
