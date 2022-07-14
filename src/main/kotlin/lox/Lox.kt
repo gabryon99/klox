@@ -2,7 +2,6 @@ package lox
 
 import lox.backend.Interpreter
 import lox.backend.RuntimeError
-import lox.frontend.ast.AstIpnPrinter
 import lox.frontend.common.Token
 import lox.frontend.common.TokenType
 import lox.frontend.lexer.Scanner
@@ -49,16 +48,13 @@ class Lox {
             val tokens = scanner.scanTokens()
 
             val parser = Parser(tokens)
-
-            val expr = parser.parse()
+            val statements = parser.parse()
 
             if (hadError) {
                 return
             }
 
-            expr?.let {
-                interpreter.interpret(it)
-            }
+            interpreter.interpret(statements)
         }
 
         @JvmStatic
@@ -67,13 +63,15 @@ class Lox {
             val input = InputStreamReader(System.`in`)
             val reader = BufferedReader(input)
 
+            println("Digit 'quit' to exit from REPL.")
+
             while (true) {
 
                 print("> ")
 
                 // Get next input line
                 val line = reader.readLine()
-                if (line.isEmpty()) {
+                if (line.isEmpty() || line == "quit") {
                     break
                 }
 

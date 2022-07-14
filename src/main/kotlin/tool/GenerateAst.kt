@@ -62,4 +62,9 @@ fun main(args: Array<String>) {
         "Literal   ; val value: Any?",
         "Unary     ; val operator: Token, val right: Expr"
     ))
+
+    defineAst(outputDir, "Stmt", listOf(
+        "Expression    ; val expr: Expr",
+        "Print         ; val expr: Expr"
+    ))
 }

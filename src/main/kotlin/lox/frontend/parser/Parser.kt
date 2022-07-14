@@ -2,9 +2,9 @@ package lox.frontend.parser
 
 import lox.Lox
 import lox.frontend.ast.Expr
+import lox.frontend.ast.Stmt
 import lox.frontend.common.Token
 import lox.frontend.common.TokenType
-import kotlin.math.exp
 
 class Parser(private val tokens: List<Token>) {
 
@@ -12,12 +12,14 @@ class Parser(private val tokens: List<Token>) {
 
     private var current = 0
 
-    fun parse(): Expr? {
-        return try {
-            expression()
-        } catch (error: ParseError) {
-            null
+    fun parse(): List<Stmt> {
+       val statements = mutableListOf<Stmt>()
+
+        while (!isAtEnd()) {
+            statements.add(statement())
         }
+
+        return statements
     }
 
     private fun advance(): Token {
@@ -50,8 +52,27 @@ class Parser(private val tokens: List<Token>) {
         return false
     }
 
+    private fun statement(): Stmt {
+        if (match(TokenType.PRINT)) {
+            return printStatement()
+        }
+        return expressionStatement()
+    }
+
+    private fun expressionStatement(): Stmt {
+        val expr = expression()
+        consume(TokenType.SEMICOLON, "Expect ';' after expression.")
+        return Stmt.Expression(expr)
+    }
+
+    private fun printStatement(): Stmt {
+        val value = expression()
+        consume(TokenType.SEMICOLON, "Expected ';' after value.")
+        return Stmt.Print(value)
+    }
+
     private fun expression(): Expr {
-        return equality();
+        return equality()
     }
 
     private fun equality(): Expr {

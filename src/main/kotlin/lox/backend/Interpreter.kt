@@ -2,19 +2,25 @@ package lox.backend
 
 import lox.Lox
 import lox.frontend.ast.Expr
+import lox.frontend.ast.Stmt
 import lox.frontend.common.Token
 import lox.frontend.common.TokenType
 
-class Interpreter : Expr.Visitor<Any?> {
+class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
 
-    fun interpret(expression: Expr) {
+    fun interpret(statements: List<Stmt>) {
         try {
-            val value = evaluate(expression)
-            println(stringify(value))
+            statements.forEach {
+                execute(it)
+            }
         }
         catch (error: RuntimeError) {
             Lox.runtimeError(error)
         }
+    }
+
+    private fun execute(it: Stmt) {
+        it.accept(this)
     }
 
     private fun stringify(value: Any?): String {
@@ -134,7 +140,7 @@ class Interpreter : Expr.Visitor<Any?> {
         return when (expr.operator.tokenType) {
 
             TokenType.BANG -> {
-                !isTruthy(right);
+                !isTruthy(right)
             }
 
             TokenType.MINUS -> {
@@ -169,6 +175,15 @@ class Interpreter : Expr.Visitor<Any?> {
 
     private fun evaluate(exp: Expr): Any? {
         return exp.accept(this)
+    }
+
+    override fun visitExpressionStmt(stmt: Stmt.Expression) {
+        evaluate(stmt.expr)
+    }
+
+    override fun visitPrintStmt(stmt: Stmt.Print) {
+        val value = evaluate(stmt.expr)
+        println(stringify(value))
     }
 
 }

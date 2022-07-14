@@ -12,3 +12,21 @@ fun main() {
     print "42 is the ultimate answer.";
 }
 ```
+### Grammar
+
+```
+program     ::=     statement* EOF
+
+statement   ::=     exprStmr | printStmt
+
+exprStmt    ::=     expression ";"
+printStmt   ::=     "print" expression ";"
+
+expression  ::=     equaility | comparison "?" expression ":" expression
+equality    ::=     comparison (("==" | "!=") comparison)*
+comparison  ::=     term (("<" | "<=" | ">" | ">=") term)*
+term        ::=     factor (("-" | "+") factor)*
+factor      ::=     unary (("/" | "*") unary)*
+unary       ::=     ("!" | "-") unary | primary
+primary     ::=     NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")"
+```
