@@ -17,9 +17,11 @@ fun main() {
 ```
 program         ::=     declaration* EOF
 
-declaration     ::=     varDecl | statement
+declaration     ::=     varDecl | funDecl | statement
 
 varDecl         ::=     "var" IDENTIFIER ("=" expression)? ";"
+funDecl         ::      "fun" function
+
 
 statement       ::=     exprStmr | printStmt | ifStmt | whileStmt | block | alterFlowStmt
 
@@ -30,6 +32,9 @@ ifStmt          ::=     "if" "(" expression ")" statement ("else" statement)?
 whileStmt       ::=     "while" "(" expression ")" statement
 forStmt         ::=     "for" "(" (varDecl | expression) ";" expression? ";" expression? ")" loopStmt
 alterFlowStmt   ::=     "break" ";" 
+
+function        ::=     IDENTIFIER "(" paramaters? ")" block
+paramaters      ::=     IDENTIFIER ("," IDENTIFIER)*
 
 expression      ::=     assignment
 assignment      ::=     IDENTIFIER "=" assignment | equality | comparison "?" expression ":" expression | logic_or

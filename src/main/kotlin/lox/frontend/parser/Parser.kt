@@ -67,6 +67,11 @@ class Parser(private val tokens: List<Token>) {
 
     private fun declaration(): Stmt? {
         return try {
+
+            if (match(TokenType.FUN)) {
+                return function("function")
+            }
+
             if (match(TokenType.VAR)) {
                 varDeclaration()
             }
@@ -78,6 +83,28 @@ class Parser(private val tokens: List<Token>) {
             synchronize()
             null
         }
+    }
+
+    private fun function(kind: String): Stmt.Function {
+
+        val name = consume(TokenType.IDENTIFIER, "Expect $kind name.")
+        consume(TokenType.LEFT_PAREN, "Expect '(' after $kind name")
+
+        val parameters = mutableListOf<Token>()
+        if (!check(TokenType.RIGHT_PAREN)) {
+            do {
+                if (parameters.size >= MAX_ARGUMENTS_NUMBER) {
+                    error(peek(), "Cant have more than $MAX_ARGUMENTS_NUMBER parameters.")
+                }
+                parameters.add(consume(TokenType.IDENTIFIER, "Expect parameter name."))
+            } while (match(TokenType.COMMA))
+        }
+        consume(TokenType.RIGHT_PAREN, "Expect ')' after parameters list.")
+        consume(TokenType.LEFT_BRACE, "Expect '{' before $kind body.")
+
+        val body = block()
+
+        return Stmt.Function(name, parameters, body)
     }
 
     private fun varDeclaration(): Stmt {
@@ -113,6 +140,7 @@ class Parser(private val tokens: List<Token>) {
         if (match(TokenType.BREAK)) {
             return breakStatement()
         }
+
 
         return expressionStatement()
     }

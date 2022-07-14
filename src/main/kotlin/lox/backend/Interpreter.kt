@@ -8,7 +8,7 @@ import lox.frontend.common.TokenType
 
 class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
 
-    private val globals = Environment()
+    val globals = Environment()
     private var environment = globals
 
     init {
@@ -285,7 +285,12 @@ class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
         throw RuntimeBreak()
     }
 
-    private fun executeBlock(stmt: Stmt.Block, environment: Environment) {
+    override fun visitFunctionStmt(stmt: Stmt.Function) {
+        val function = LoxFunction(stmt)
+        environment.define(stmt.name.lexeme, function)
+    }
+
+    fun executeBlock(stmt: Stmt.Block, environment: Environment) {
 
         val previous = this.environment
 
