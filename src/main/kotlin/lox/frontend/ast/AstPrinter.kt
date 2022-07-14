@@ -30,11 +30,15 @@ class AstPrinter : Expr.Visitor<String> {
 
         for (expr in exprs) {
             stringBuilder.append(" ")
-            stringBuilder.append(expr.accept(this));
+            stringBuilder.append(expr.accept(this))
         }
         stringBuilder.append(")")
 
         return stringBuilder.toString()
+    }
+
+    override fun visitAssignExpr(expr: Expr.Assign): String {
+        TODO("Not yet implemented")
     }
 
     override fun visitBinaryExpr(expr: Expr.Binary): String {
@@ -50,7 +54,7 @@ class AstPrinter : Expr.Visitor<String> {
     }
 
     override fun visitLiteralExpr(expr: Expr.Literal): String {
-        if (expr.value == null) return "nil";
+        if (expr.value == null) return "nil"
         return expr.value.toString()
     }
 

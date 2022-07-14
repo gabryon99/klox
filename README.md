@@ -26,7 +26,8 @@ statement   ::=     exprStmr | printStmt
 exprStmt    ::=     expression ";"
 printStmt   ::=     "print" expression ";"
 
-expression  ::=     equaility | comparison "?" expression ":" expression
+expression  ::=     assignment
+assignment  ::=     IDENTIFIER "=" assignment | equality | comparison "?" expression ":" expression
 equality    ::=     comparison (("==" | "!=") comparison)*
 comparison  ::=     term (("<" | "<=" | ">" | ">=") term)*
 term        ::=     factor (("-" | "+") factor)*

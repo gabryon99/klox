@@ -28,6 +28,9 @@ class AstIpnPrinter : Expr.Visitor<String> {
     }
 
     fun print(expr: Expr) : String = expr.accept(this)
+    override fun visitAssignExpr(expr: Expr.Assign): String {
+        TODO("Not yet implemented")
+    }
 
     override fun visitBinaryExpr(expr: Expr.Binary): String {
 
@@ -52,7 +55,7 @@ class AstIpnPrinter : Expr.Visitor<String> {
     }
 
     override fun visitLiteralExpr(expr: Expr.Literal): String {
-        if (expr.value == null) return "nil";
+        if (expr.value == null) return "nil"
         return expr.value.toString()
     }
 
