@@ -56,6 +56,10 @@ class AstIpnPrinter : Expr.Visitor<String> {
         return expr.value.toString()
     }
 
+    override fun visitVariableExpr(expr: Expr.Variable): String {
+        TODO("Not yet implemented")
+    }
+
     override fun visitUnaryExpr(expr: Expr.Unary): String {
         val resOperand = expr.right.accept(this)
         return "${expr.operator.lexeme}$resOperand"

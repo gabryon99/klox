@@ -8,10 +8,12 @@ import lox.frontend.common.TokenType
 
 class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
 
-    fun interpret(statements: List<Stmt>) {
+    private val environment = Environment()
+
+    fun interpret(statements: List<Stmt?>) {
         try {
             statements.forEach {
-                execute(it)
+                it?.let { execute(it) }
             }
         }
         catch (error: RuntimeError) {
@@ -134,6 +136,10 @@ class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
         return expr.value
     }
 
+    override fun visitVariableExpr(expr: Expr.Variable): Any? {
+        return environment.get(expr.name)
+    }
+
     override fun visitUnaryExpr(expr: Expr.Unary): Any? {
 
         val right = evaluate(expr.right)
@@ -184,6 +190,15 @@ class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
     override fun visitPrintStmt(stmt: Stmt.Print) {
         val value = evaluate(stmt.expr)
         println(stringify(value))
+    }
+
+    override fun visitVarStmt(stmt: Stmt.Var) {
+        var value: Any? = null
+        if (stmt.initializer != null) {
+            value = evaluate(stmt.initializer)
+        }
+
+        environment.define(stmt.name.lexeme, value)
     }
 
 }
