@@ -1,0 +1,30 @@
+// null is our bottom element
+// https://en.wikibooks.org/wiki/Haskell/Denotational_semantics
+
+fun g(x) {
+    return fun(n) {
+        if (n == 0) {
+            return 1;
+        }
+        else {
+            return n * x(n - 1);
+        }
+    };
+}
+
+fun fix(num) {
+
+    var x0 = fun(n) {
+        return nil;
+    };
+
+    for (var i = 0; i < num; i = i + 1) {
+        x0 = g(x0);
+    }
+
+    return x0;
+}
+
+
+print(fix(5)(4)); // Should print 4!
+print(fix(4)(4)); // Should fail

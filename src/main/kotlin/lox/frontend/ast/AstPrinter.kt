@@ -74,4 +74,8 @@ class AstPrinter : Expr.Visitor<String> {
         return parenthesize(expr.operator.lexeme, expr.right)
     }
 
+    override fun visitLambdaExpr(expr: Expr.Lambda): String {
+        TODO("Not yet implemented")
+    }
+
 }

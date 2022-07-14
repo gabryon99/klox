@@ -76,4 +76,8 @@ class AstIpnPrinter : Expr.Visitor<String> {
         return "${expr.operator.lexeme}$resOperand"
     }
 
+    override fun visitLambdaExpr(expr: Expr.Lambda): String {
+        TODO("Not yet implemented")
+    }
+
 }

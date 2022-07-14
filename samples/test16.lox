@@ -1,0 +1,26 @@
+fun apply(fn, arg) {
+    return fn(arg);
+}
+
+fun filter(data, filter) {
+    if (filter(data)) {
+        return data;
+    }
+    return nil;
+}
+
+
+var i = 10;
+
+print(filter(10, fun(num) {
+    i = i + 1; // Small side-effect
+    return num == 10;
+}));
+
+print(i);
+
+var twice = fun(x) {
+    return 2 * x;
+};
+
+print(twice(3));

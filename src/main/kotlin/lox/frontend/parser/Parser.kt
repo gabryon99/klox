@@ -145,7 +145,12 @@ class Parser(private val tokens: List<Token>) {
         }
 
 
-        return expressionStatement()
+        val exp = expressionStatement()
+        if (exp.expr is Expr.Lambda) {
+            throw error(previous(), "Anonymous function cannot be declared in top-level.")
+        }
+
+        return exp
     }
 
     private fun returnStatement(): Stmt {
@@ -271,7 +276,7 @@ class Parser(private val tokens: List<Token>) {
         return stmts
     }
 
-    private fun expressionStatement(): Stmt {
+    private fun expressionStatement(): Stmt.Expression {
         val expr = expression()
         consume(TokenType.SEMICOLON, "Expect ';' after expression.")
         return Stmt.Expression(expr)
@@ -446,6 +451,10 @@ class Parser(private val tokens: List<Token>) {
 
         if (match(TokenType.IDENTIFIER)) return Expr.Variable(previous())
 
+        if (match(TokenType.FUN)) {
+            return lambdaExpression()
+        }
+
         if (match(TokenType.NUMBER, TokenType.STRING)) {
             return Expr.Literal(previous().literal)
         }
@@ -457,6 +466,29 @@ class Parser(private val tokens: List<Token>) {
         }
 
         throw error(peek(), "Expect expression.")
+    }
+
+    private fun lambdaExpression(): Expr {
+
+        consume(TokenType.LEFT_PAREN, "Expect '(' after lambda function.")
+
+        // TODO: refactoring
+        val parameters = mutableListOf<Token>()
+
+        if (!check(TokenType.RIGHT_PAREN)) {
+            do {
+                if (parameters.size >= MAX_ARGUMENTS_NUMBER) {
+                    error(peek(), "Cant have more than $MAX_ARGUMENTS_NUMBER parameters.")
+                }
+                parameters.add(consume(TokenType.IDENTIFIER, "Expect parameter name."))
+            } while (match(TokenType.COMMA))
+        }
+        consume(TokenType.RIGHT_PAREN, "Expect ')' after parameters list.")
+        consume(TokenType.LEFT_BRACE, "Expect '{' before lambda body.")
+
+        val body = block()
+
+        return Expr.Lambda(parameters, body)
     }
 
     private fun consume(expectedToken: TokenType, message: String): Token {

@@ -22,7 +22,6 @@ declaration     ::=     varDecl | funDecl | statement
 varDecl         ::=     "var" IDENTIFIER ("=" expression)? ";"
 funDecl         ::      "fun" function
 
-
 statement       ::=     exprStmr | printStmt | ifStmt | whileStmt | block | alterFlowStmt | returnStmt
 
 block           ::=     "{" declaration* "}"
@@ -48,5 +47,6 @@ factor          ::=     unary (("/" | "*") unary)*
 unary           ::=     ("!" | "-") unary | call
 call            ::=     primary ( "(" arguments ? ")" )*
 arguments       ::=     expression ("," expression)*
-primary         ::=     NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" | IDENTIFIER
+primary         ::=     NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" | IDENTIFIER | lambda
+lambda          ::=     "fun" "(" parameters? ")" block
 ```

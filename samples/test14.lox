@@ -1,0 +1,6 @@
+fun twice(fn, arg1, arg2) {
+    fn(arg1);
+    fn(arg2);
+}
+
+twice(fun (arg) { print arg; }, "Hello", "World");

@@ -215,6 +215,10 @@ class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
         }
     }
 
+    override fun visitLambdaExpr(expr: Expr.Lambda): Any? {
+        return LoxLambdaFunction(expr, environment)
+    }
+
     private fun checkNumberOperand(operator: Token, right: Any?) {
         if (right !is Double) throw RuntimeError(operator, "Operand must be a number")
     }
