@@ -140,9 +140,26 @@ class Parser(private val tokens: List<Token>) {
         if (match(TokenType.BREAK)) {
             return breakStatement()
         }
+        if (match(TokenType.RETURN)) {
+            return returnStatement()
+        }
 
 
         return expressionStatement()
+    }
+
+    private fun returnStatement(): Stmt {
+
+        val keyword = previous()
+        var value: Expr? = null
+
+        if (!check(TokenType.SEMICOLON)) {
+            value = expression()
+        }
+
+        consume(TokenType.SEMICOLON, "Expect ';' after return value.")
+
+        return Stmt.Return(keyword, value)
     }
 
     private fun breakStatement(): Stmt {

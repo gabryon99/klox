@@ -23,7 +23,7 @@ varDecl         ::=     "var" IDENTIFIER ("=" expression)? ";"
 funDecl         ::      "fun" function
 
 
-statement       ::=     exprStmr | printStmt | ifStmt | whileStmt | block | alterFlowStmt
+statement       ::=     exprStmr | printStmt | ifStmt | whileStmt | block | alterFlowStmt | returnStmt
 
 block           ::=     "{" declaration* "}"
 exprStmt        ::=     expression ";"
@@ -32,6 +32,7 @@ ifStmt          ::=     "if" "(" expression ")" statement ("else" statement)?
 whileStmt       ::=     "while" "(" expression ")" statement
 forStmt         ::=     "for" "(" (varDecl | expression) ";" expression? ";" expression? ")" loopStmt
 alterFlowStmt   ::=     "break" ";" 
+returnStmt      ::=     "return" expression? ";"
 
 function        ::=     IDENTIFIER "(" paramaters? ")" block
 paramaters      ::=     IDENTIFIER ("," IDENTIFIER)*

@@ -286,8 +286,16 @@ class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
     }
 
     override fun visitFunctionStmt(stmt: Stmt.Function) {
-        val function = LoxFunction(stmt)
+        val function = LoxFunction(stmt, environment)
         environment.define(stmt.name.lexeme, function)
+    }
+
+    override fun visitReturnStmt(stmt: Stmt.Return) {
+        val value: Any? = if (stmt.value != null) {
+            evaluate(stmt.value)
+        } else { null }
+
+        throw Return(value)
     }
 
     fun executeBlock(stmt: Stmt.Block, environment: Environment) {
