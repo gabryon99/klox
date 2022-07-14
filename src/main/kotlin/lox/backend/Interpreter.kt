@@ -25,7 +25,7 @@ class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
         it.accept(this)
     }
 
-    private fun stringify(value: Any?): String {
+    fun stringify(value: Any?): String {
 
         if (value == null) return "null"
 
@@ -185,12 +185,24 @@ class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
         return true
     }
 
-    private fun evaluate(exp: Expr): Any? {
+    fun evaluate(exp: Expr): Any? {
         return exp.accept(this)
     }
 
     override fun visitExpressionStmt(stmt: Stmt.Expression) {
         evaluate(stmt.expr)
+    }
+
+    override fun visitIfStmt(stmt: Stmt.If) {
+
+        if (isTruthy(evaluate(stmt.condition))) {
+            execute(stmt.thenBranch)
+        }
+        else {
+            stmt.elseBranch?.let {
+                execute(it)
+            }
+        }
     }
 
     override fun visitPrintStmt(stmt: Stmt.Print) {

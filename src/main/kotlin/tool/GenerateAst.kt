@@ -67,6 +67,7 @@ fun main(args: Array<String>) {
 
     defineAst(outputDir, "Stmt", listOf(
         "Expression    ; val expr: Expr",
+        "If            ; val condition: Expr, val thenBranch: Stmt, val elseBranch: Stmt?",
         "Print         ; val expr: Expr",
         "Var           ; val name: Token, val initializer: Expr?",
         "Block         ; val stmts: List<Stmt?>",

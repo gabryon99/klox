@@ -13,6 +13,7 @@ class Parser(private val tokens: List<Token>) {
     private var current = 0
 
     fun parse(): List<Stmt?> {
+
        val statements = mutableListOf<Stmt?>()
 
         while (!isAtEnd()) {
@@ -20,6 +21,15 @@ class Parser(private val tokens: List<Token>) {
         }
 
         return statements
+    }
+
+    fun parseExpression(): Expr? {
+        return try {
+            expression()
+        }
+        catch (error: ParseError) {
+            null
+        }
     }
 
     private fun advance(): Token {
@@ -88,8 +98,25 @@ class Parser(private val tokens: List<Token>) {
         if (match(TokenType.LEFT_BRACE)) {
             return Stmt.Block(block())
         }
+        if (match(TokenType.IF)) {
+            return ifStatement()
+        }
 
         return expressionStatement()
+    }
+
+    private fun ifStatement(): Stmt {
+        consume(TokenType.LEFT_PAREN,"Expect '(' after 'if'.")
+        val condition = expression()
+        consume(TokenType.RIGHT_PAREN,"Expect ')' after 'if'.")
+
+        val thenBranch = statement()
+        var elseBranch: Stmt? = null
+        if (match(TokenType.ELSE)) {
+            elseBranch = statement()
+        }
+
+        return Stmt.If(condition, thenBranch, elseBranch)
     }
 
     private fun block(): List<Stmt?> {

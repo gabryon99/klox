@@ -21,14 +21,15 @@ declaration ::=     varDecl | statement
 
 varDecl     ::=     "var" IDENTIFIER ("=" expression)? ";"
 
-statement   ::=     exprStmr | printStmt | block
+statement   ::=     exprStmr | printStmt | ifStmt | block
 
 block       ::=     "{" declaration* "}"
 exprStmt    ::=     expression ";"
 printStmt   ::=     "print" expression ";"
+ifStmt      ::=     "if" "(" expression ")" statement ("else" statement)?
 
 expression  ::=     assignment
-assignment  ::=     IDENTIFIER "=" assignment | equality | comparison "?" expression ":" expression
+assignment  ::=     IDENTIFIER "=" assignment | equality | comparison "?" expression ":" expression 
 equality    ::=     comparison (("==" | "!=") comparison)*
 comparison  ::=     term (("<" | "<=" | ">" | ">=") term)*
 term        ::=     factor (("-" | "+") factor)*

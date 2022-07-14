@@ -2,7 +2,7 @@ package lox.backend
 
 import lox.frontend.common.Token
 
-class Environment(val enclosing: Environment? = null) {
+class Environment(private val enclosing: Environment? = null) {
 
     private val values: MutableMap<String, Any?> = mutableMapOf()
 

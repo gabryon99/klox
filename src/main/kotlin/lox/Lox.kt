@@ -42,12 +42,22 @@ class Lox {
         }
 
         @JvmStatic
-        private fun run(source: String) {
+        private fun run(source: String, repl: Boolean = false) {
 
             val scanner = Scanner(source)
             val tokens = scanner.scanTokens()
 
             val parser = Parser(tokens)
+
+            if (repl) {
+                // Check if we succeed to parse an expression
+                val expr = parser.parseExpression()
+                if (!hadError && expr != null) {
+                    println(interpreter.stringify(interpreter.evaluate(expr)))
+                    return
+                }
+            }
+
             val statements = parser.parse()
 
             if (hadError) {
@@ -75,7 +85,7 @@ class Lox {
                     break
                 }
 
-                run(line)
+                run(line, true)
                 hadError = false
             }
         }
