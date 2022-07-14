@@ -1,0 +1,2 @@
+print "Time:"
+print clock();

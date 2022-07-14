@@ -49,6 +49,10 @@ class AstIpnPrinter : Expr.Visitor<String> {
         return "($cond) ? $thenBranch : $elseBranch"
     }
 
+    override fun visitCallExpr(expr: Expr.Call): String {
+        TODO("Not yet implemented")
+    }
+
     override fun visitGroupingExpr(expr: Expr.Grouping): String {
         val exprVal = expr.exp.accept(this)
         return "( $exprVal )"

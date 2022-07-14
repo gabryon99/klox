@@ -59,11 +59,12 @@ fun main(args: Array<String>) {
         "Assign    ; val name: Token, val value: Expr",
         "Binary    ; val left: Expr, val operator: Token, val right: Expr",
         "Ternary   ; val cond: Expr, val thenBranch: Expr, val elseBranch: Expr",
+        "Call      ; val callee: Expr, val paren: Token, val arguments: List<Expr>",
         "Grouping  ; val exp: Expr",
         "Literal   ; val value: Any?",
         "Logical   ; val left: Expr, val operator: Token, val right: Expr",
         "Variable  ; val name: Token",
-        "Unary     ; val operator: Token, val right: Expr"
+        "Unary     ; val operator: Token, val right: Expr",
     ))
 
     defineAst(outputDir, "Stmt", listOf(

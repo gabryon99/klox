@@ -8,7 +8,20 @@ import lox.frontend.common.TokenType
 
 class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
 
-    private var environment = Environment()
+    private val globals = Environment()
+    private var environment = globals
+
+    init {
+        globals.define("clock", object: LoxCallable {
+
+            override fun arity(): Int = 0
+
+            override fun call(interpreter: Interpreter, arguments: List<Any?>): Any {
+                return (System.currentTimeMillis().toDouble() / 1000.0)
+            }
+
+        })
+    }
 
     fun interpret(statements: List<Stmt?>) {
         try {
@@ -132,6 +145,28 @@ class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
         }
 
         return evaluate(expr.elseBranch)
+    }
+
+    override fun visitCallExpr(expr: Expr.Call): Any? {
+
+        val callee = evaluate(expr.callee)
+        val arguments = mutableListOf<Any?>()
+
+        expr.arguments.forEach {
+            // Eager semantic
+            arguments.add(evaluate(it))
+        }
+
+        if (callee !is LoxCallable) {
+            throw RuntimeError(expr.paren, "Can only call functions and classes.")
+        }
+
+        val function = (callee)
+        if (arguments.size != function.arity()) {
+            throw RuntimeError(expr.paren, "Expected ${function.arity()} arguments but got ${arguments.size}.")
+        }
+
+        return function.call(this, arguments)
     }
 
     override fun visitGroupingExpr(expr: Expr.Grouping): Any? {
