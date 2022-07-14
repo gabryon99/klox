@@ -28,6 +28,7 @@ exprStmt    ::=     expression ";"
 printStmt   ::=     "print" expression ";"
 ifStmt      ::=     "if" "(" expression ")" statement ("else" statement)?
 whileStmt   ::=     "while" "(" expression ")" statement
+forStmt     ::=     "for" "(" (varDecl | expression) ";" expression? ";" expression? ")" statement
 
 expression  ::=     assignment
 assignment  ::=     IDENTIFIER "=" assignment | equality | comparison "?" expression ":" expression | logic_or
