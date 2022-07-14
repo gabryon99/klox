@@ -8,7 +8,7 @@ import lox.frontend.common.TokenType
 
 class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
 
-    private val environment = Environment()
+    private var environment = Environment()
 
     fun interpret(statements: List<Stmt?>) {
         try {
@@ -205,6 +205,26 @@ class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
         }
 
         environment.define(stmt.name.lexeme, value)
+    }
+
+    override fun visitBlockStmt(stmt: Stmt.Block) {
+        executeBlock(stmt, Environment(environment))
+    }
+
+    private fun executeBlock(stmt: Stmt.Block, environment: Environment) {
+
+        val previous = this.environment
+
+        try {
+            this.environment = environment
+
+            stmt.stmts.forEach {
+                it?.let { execute(it) }
+            }
+
+        } finally {
+            this.environment = previous
+        }
     }
 
 }

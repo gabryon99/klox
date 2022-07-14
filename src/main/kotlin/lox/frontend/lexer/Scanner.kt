@@ -93,11 +93,12 @@ class Scanner(private val source: String) {
             advance()
         }
 
-        if (!isAtEnd()) {
+        if (isAtEnd()) {
             Lox.error(line, "Undetermined string.")
             return
         }
 
+        // The closing "
         advance()
 
         val value = source.substring(start + 1, current - 1)

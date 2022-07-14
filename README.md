@@ -21,8 +21,9 @@ declaration ::=     varDecl | statement
 
 varDecl     ::=     "var" IDENTIFIER ("=" expression)? ";"
 
-statement   ::=     exprStmr | printStmt
+statement   ::=     exprStmr | printStmt | block
 
+block       ::=     "{" declaration* "}"
 exprStmt    ::=     expression ";"
 printStmt   ::=     "print" expression ";"
 

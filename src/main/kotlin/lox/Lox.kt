@@ -103,7 +103,7 @@ class Lox {
         }
 
         fun runtimeError(error: RuntimeError) {
-            System.err.println("${error.message}\n[line: ${error.token.line}]")
+            System.err.println("[line: ${error.token.line}] ${error.message}")
             hadRuntimeError = true
         }
     }
