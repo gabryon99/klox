@@ -21,12 +21,13 @@ declaration ::=     varDecl | statement
 
 varDecl     ::=     "var" IDENTIFIER ("=" expression)? ";"
 
-statement   ::=     exprStmr | printStmt | ifStmt | block
+statement   ::=     exprStmr | printStmt | ifStmt | whileStmt| block
 
 block       ::=     "{" declaration* "}"
 exprStmt    ::=     expression ";"
 printStmt   ::=     "print" expression ";"
 ifStmt      ::=     "if" "(" expression ")" statement ("else" statement)?
+whileStmt   ::=     "while" "(" expression ")" statement
 
 expression  ::=     assignment
 assignment  ::=     IDENTIFIER "=" assignment | equality | comparison "?" expression ":" expression | logic_or

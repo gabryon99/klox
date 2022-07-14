@@ -235,6 +235,12 @@ class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
         executeBlock(stmt, Environment(environment))
     }
 
+    override fun visitWhileStmt(stmt: Stmt.While) {
+        while (isTruthy(evaluate(stmt.condition))) {
+            execute(stmt.body)
+        }
+    }
+
     private fun executeBlock(stmt: Stmt.Block, environment: Environment) {
 
         val previous = this.environment
