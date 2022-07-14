@@ -5,13 +5,13 @@ import lox.frontend.ast.Expr
 import lox.frontend.ast.Stmt
 import lox.frontend.common.Token
 import lox.frontend.common.TokenType
-import kotlin.math.exp
 
 class Parser(private val tokens: List<Token>) {
 
-    class ParseError: Throwable()
+    class ParseError(msg: String = ""): Throwable(msg)
 
     private var current = 0
+    private var loopDepth = 0
 
     fun parse(): List<Stmt?> {
 
@@ -108,66 +108,93 @@ class Parser(private val tokens: List<Token>) {
         if (match(TokenType.FOR)) {
             return forStatement()
         }
+        if (match(TokenType.BREAK)) {
+            return breakStatement()
+        }
 
         return expressionStatement()
     }
 
+    private fun breakStatement(): Stmt {
+
+        consume(TokenType.SEMICOLON, "Expect ';' after break statement.")
+
+        if (loopDepth == 0) {
+            throw error(previous(), "Break commands can be used only in loops.")
+        }
+
+        return Stmt.Break()
+    }
+
     private fun forStatement(): Stmt {
 
-        consume(TokenType.LEFT_PAREN, "Expect '(' after 'while'.")
-        var initializer = if (match(TokenType.SEMICOLON)) {
-            null
-        } else if (match(TokenType.VAR)) {
-            varDeclaration()
-        } else {
-            expressionStatement()
+        loopDepth += 1
+
+        try {
+            consume(TokenType.LEFT_PAREN, "Expect '(' after 'while'.")
+            val initializer = if (match(TokenType.SEMICOLON)) {
+                null
+            } else if (match(TokenType.VAR)) {
+                varDeclaration()
+            } else {
+                expressionStatement()
+            }
+
+            var condition = if (!check(TokenType.SEMICOLON)) {
+                expression()
+            } else {
+                null
+            }
+
+            consume(TokenType.SEMICOLON, "Expect ';' after loop condition")
+
+            val increment = if (!check(TokenType.RIGHT_PAREN)) {
+                expression()
+            } else {
+                null
+            }
+
+            consume(TokenType.RIGHT_PAREN, "Expect ')' after for clauses.")
+
+            var body = statement()
+
+            if (increment != null) {
+                body = Stmt.Block(listOf(body, Stmt.Expression(increment)))
+            }
+
+            if (condition == null) {
+                condition = Expr.Literal(true)
+            }
+
+            body = Stmt.While(condition, body)
+
+            if (initializer != null) {
+                body = Stmt.Block(listOf(initializer, body))
+            }
+
+            return body
         }
-
-
-        var condition = if (!check(TokenType.SEMICOLON)) {
-            expression()
-        } else {
-            null
+        finally {
+            loopDepth -= 1
         }
-
-        consume(TokenType.SEMICOLON, "Expect ';' after loop condition")
-
-        val increment = if (!check(TokenType.RIGHT_PAREN)) {
-            expression()
-        } else {
-            null
-        }
-
-        consume(TokenType.RIGHT_PAREN, "Expect ')' after for clauses.")
-
-        var body = statement()
-
-        if (increment != null) {
-            body = Stmt.Block(listOf(body, Stmt.Expression(increment)))
-        }
-
-        if (condition == null) {
-            condition = Expr.Literal(true)
-        }
-
-        body = Stmt.While(condition, body)
-
-        if (initializer != null) {
-            body = Stmt.Block(listOf(initializer, body))
-        }
-
-        return body
     }
 
     private fun whileStatement(): Stmt {
 
-        consume(TokenType.LEFT_PAREN, "Expect '(' after 'while'.")
-        val condition = expression()
-        consume(TokenType.RIGHT_PAREN, "Expect ')' after 'while'.")
+        loopDepth += 1
 
-        var whileBody: Stmt = statement()
+        try {
+            consume(TokenType.LEFT_PAREN, "Expect '(' after 'while'.")
+            val condition = expression()
+            consume(TokenType.RIGHT_PAREN, "Expect ')' after 'while'.")
 
-        return Stmt.While(condition, whileBody)
+            val whileBody: Stmt = statement()
+
+            return Stmt.While(condition, whileBody)
+        }
+        finally {
+            loopDepth -= 1
+        }
     }
 
     private fun ifStatement(): Stmt {

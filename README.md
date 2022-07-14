@@ -15,29 +15,30 @@ fun main() {
 ### Grammar
 
 ```
-program     ::=     declaration* EOF
+program         ::=     declaration* EOF
 
-declaration ::=     varDecl | statement
+declaration     ::=     varDecl | statement
 
-varDecl     ::=     "var" IDENTIFIER ("=" expression)? ";"
+varDecl         ::=     "var" IDENTIFIER ("=" expression)? ";"
 
-statement   ::=     exprStmr | printStmt | ifStmt | whileStmt| block
+statement       ::=     exprStmr | printStmt | ifStmt | whileStmt | block | alterFlowStmt
 
-block       ::=     "{" declaration* "}"
-exprStmt    ::=     expression ";"
-printStmt   ::=     "print" expression ";"
-ifStmt      ::=     "if" "(" expression ")" statement ("else" statement)?
-whileStmt   ::=     "while" "(" expression ")" statement
-forStmt     ::=     "for" "(" (varDecl | expression) ";" expression? ";" expression? ")" statement
+block           ::=     "{" declaration* "}"
+exprStmt        ::=     expression ";"
+printStmt       ::=     "print" expression ";"
+ifStmt          ::=     "if" "(" expression ")" statement ("else" statement)?
+whileStmt       ::=     "while" "(" expression ")" statement
+forStmt         ::=     "for" "(" (varDecl | expression) ";" expression? ";" expression? ")" loopStmt
+alterFlowStmt   ::=     "break" ";" 
 
-expression  ::=     assignment
-assignment  ::=     IDENTIFIER "=" assignment | equality | comparison "?" expression ":" expression | logic_or
-logic_or    ::=     logic_and ("or" logic_and)*
-logic_and   ::=     equality ("and" equality)*
-equality    ::=     comparison (("==" | "!=") comparison)*
-comparison  ::=     term (("<" | "<=" | ">" | ">=") term)*
-term        ::=     factor (("-" | "+") factor)*
-factor      ::=     unary (("/" | "*") unary)*
-unary       ::=     ("!" | "-") unary | primary
-primary     ::=     NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" | IDENTIFIER
+expression      ::=     assignment
+assignment      ::=     IDENTIFIER "=" assignment | equality | comparison "?" expression ":" expression | logic_or
+logic_or        ::=     logic_and ("or" logic_and)*
+logic_and       ::=     equality ("and" equality)*
+equality        ::=     comparison (("==" | "!=") comparison)*
+comparison      ::=     term (("<" | "<=" | ">" | ">=") term)*
+term            ::=     factor (("-" | "+") factor)*
+factor          ::=     unary (("/" | "*") unary)*
+unary           ::=     ("!" | "-") unary | primary
+primary         ::=     NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" | IDENTIFIER
 ```

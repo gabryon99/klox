@@ -236,9 +236,18 @@ class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
     }
 
     override fun visitWhileStmt(stmt: Stmt.While) {
-        while (isTruthy(evaluate(stmt.condition))) {
-            execute(stmt.body)
+       try {
+           while (isTruthy(evaluate(stmt.condition))) {
+               execute(stmt.body)
+           }
+       }
+       catch (rtBreak: RuntimeBreak) {
+           return
         }
+    }
+
+    override fun visitBreakStmt(stmt: Stmt.Break) {
+        throw RuntimeBreak()
     }
 
     private fun executeBlock(stmt: Stmt.Block, environment: Environment) {

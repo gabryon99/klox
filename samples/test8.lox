@@ -1,0 +1,8 @@
+// Wrong break statement position
+
+if (3 > 2) {
+    break;
+}
+else {
+    print "Unreachable";
+}
