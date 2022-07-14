@@ -59,6 +59,10 @@ class AstIpnPrinter : Expr.Visitor<String> {
         return expr.value.toString()
     }
 
+    override fun visitLogicalExpr(expr: Expr.Logical): String {
+        TODO("Not yet implemented")
+    }
+
     override fun visitVariableExpr(expr: Expr.Variable): String {
         TODO("Not yet implemented")
     }

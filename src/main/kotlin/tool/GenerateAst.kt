@@ -61,6 +61,7 @@ fun main(args: Array<String>) {
         "Ternary   ; val cond: Expr, val thenBranch: Expr, val elseBranch: Expr",
         "Grouping  ; val exp: Expr",
         "Literal   ; val value: Any?",
+        "Logical   ; val left: Expr, val operator: Token, val right: Expr",
         "Variable  ; val name: Token",
         "Unary     ; val operator: Token, val right: Expr"
     ))
