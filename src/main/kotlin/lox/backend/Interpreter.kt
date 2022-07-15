@@ -5,8 +5,6 @@ import lox.frontend.ast.Expr
 import lox.frontend.ast.Stmt
 import lox.frontend.common.Token
 import lox.frontend.common.TokenType
-import java.util.Scanner
-import kotlin.math.pow
 
 class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
 
@@ -58,7 +56,7 @@ class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
 
         val value = evaluate(expr.value)
 
-        var distance = locals[expr]
+        val distance = locals[expr]
         if (distance != null) {
             environment.assignAt(distance, expr.name, value)
         }
@@ -233,7 +231,7 @@ class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
         }
     }
 
-    override fun visitLambdaExpr(expr: Expr.Lambda): Any? {
+    override fun visitLambdaExpr(expr: Expr.Lambda): Any {
         return LoxLambdaFunction(expr, environment)
     }
 
@@ -318,6 +316,13 @@ class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
         } else { null }
 
         throw Return(value)
+    }
+
+    override fun visitClassStmt(stmt: Stmt.Class) {
+        environment.define(stmt.name.lexeme, null)
+        val clazz = LoxClass(stmt.name.lexeme)
+        environment.assign(stmt.name, clazz)
+        return
     }
 
     fun executeBlock(stmt: Stmt.Block, environment: Environment) {

@@ -78,5 +78,6 @@ fun main(args: Array<String>) {
         "Break         ; val token: Token",
         "Function      ; val name: Token, val params: List<Token>, val body: List<Stmt?>",
         "Return        ; val keyword: Token, val value: Expr?",
+        "Class         ; val name: Token, val methods: List<Stmt.Function>",
     ))
 }

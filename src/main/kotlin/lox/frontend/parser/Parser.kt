@@ -71,6 +71,10 @@ class Parser(private val tokens: List<Token>) {
                 return function("function")
             }
 
+            if (match(TokenType.CLASS)) {
+                return classDeclaration()
+            }
+
             if (match(TokenType.VAR)) {
                 varDeclaration()
             }
@@ -82,6 +86,22 @@ class Parser(private val tokens: List<Token>) {
             synchronize()
             null
         }
+    }
+
+    private fun classDeclaration(): Stmt {
+
+        val name = consume(TokenType.IDENTIFIER, "Expect a class name after 'class' keyword.")
+        consume(TokenType.LEFT_BRACE, "Expect '{' after class name '${name.lexeme}'.")
+
+        val methods = mutableListOf<Stmt.Function>()
+
+        while (!check(TokenType.RIGHT_BRACE) && !isAtEnd()) {
+            methods.add(function("method"))
+        }
+
+        consume(TokenType.RIGHT_BRACE, "Expect '}' after class ${name.lexeme} declaration.")
+
+        return Stmt.Class(name, methods)
     }
 
     private fun function(kind: String): Stmt.Function {

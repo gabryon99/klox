@@ -17,11 +17,11 @@ fun main() {
 ```
 program         ::=     declaration* EOF
 
-declaration     ::=     varDecl | funDecl | statement
+declaration     ::=     classDecl | varDecl | funDecl | statement 
 
+classDecl       ::=     "class" IDENTIFIER "{" function* "}"
 varDecl         ::=     "var" IDENTIFIER ("=" expression)? ";"
 funDecl         ::      "fun" function
-
 statement       ::=     exprStmr | printStmt | ifStmt | whileStmt | block | alterFlowStmt | returnStmt
 
 block           ::=     "{" declaration* "}"

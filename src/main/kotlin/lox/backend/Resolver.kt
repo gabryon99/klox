@@ -234,5 +234,10 @@ class Resolver(private val interpreter: Interpreter): Expr.Visitor<Unit>, Stmt.V
         if (stmt.value != null) resolve(stmt.value)
     }
 
+    override fun visitClassStmt(stmt: Stmt.Class) {
+        declare(stmt.name)
+        define(stmt.name)
+    }
+
 
 }
