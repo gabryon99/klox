@@ -248,7 +248,11 @@ class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
         val obj = evaluate(expr.obj)
 
         if (obj is LoxInstance) {
-            return obj.get(expr.name)
+            var res = obj.get(expr.name)
+            if (res is LoxFunction && res.isGetter()) {
+                res = res.call(this, listOf())
+            }
+            return res
         }
 
         throw RuntimeError(expr.name, "Only instances of classes have properties.")

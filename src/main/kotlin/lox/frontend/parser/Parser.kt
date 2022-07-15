@@ -114,23 +114,31 @@ class Parser(private val tokens: List<Token>) {
     private fun function(kind: String): Stmt.Function {
 
         val name = consume(TokenType.IDENTIFIER, "Expect $kind name.")
-        consume(TokenType.LEFT_PAREN, "Expect '(' after $kind name")
 
-        val parameters = mutableListOf<Token>()
-        if (!check(TokenType.RIGHT_PAREN)) {
-            do {
-                if (parameters.size >= MAX_ARGUMENTS_NUMBER) {
-                    error(peek(), "Cant have more than $MAX_ARGUMENTS_NUMBER parameters.")
-                }
-                parameters.add(consume(TokenType.IDENTIFIER, "Expect parameter name."))
-            } while (match(TokenType.COMMA))
+        var params: List<Token>? = null
+
+        if (kind != "method" || check(TokenType.LEFT_PAREN)) {
+
+            consume(TokenType.LEFT_PAREN, "Expect '(' after $kind name")
+
+            params = mutableListOf<Token>()
+            if (!check(TokenType.RIGHT_PAREN)) {
+                do {
+                    if (params.size >= MAX_ARGUMENTS_NUMBER) {
+                        error(peek(), "Cant have more than $MAX_ARGUMENTS_NUMBER parameters.")
+                    }
+                    params.add(consume(TokenType.IDENTIFIER, "Expect parameter name."))
+                } while (match(TokenType.COMMA))
+            }
+
+            consume(TokenType.RIGHT_PAREN, "Expect ')' after parameters list.")
         }
-        consume(TokenType.RIGHT_PAREN, "Expect ')' after parameters list.")
+
         consume(TokenType.LEFT_BRACE, "Expect '{' before $kind body.")
 
         val body = block()
 
-        return Stmt.Function(name, parameters, body)
+        return Stmt.Function(name, params, body)
     }
 
     private fun varDeclaration(): Stmt {

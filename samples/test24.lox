@@ -10,5 +10,16 @@ class Math {
 
 Math.pi = 3.14;
 
-print Math.square(3);
-print Math.pi;
+class Circle {
+    init(radius) {
+        this.radius = radius;
+    }
+
+    // Getter method JavaScript-like
+    area {
+        return Math.pi * Math.square(this.radius);
+    }
+}
+
+var circle = Circle(10);
+print circle.area;

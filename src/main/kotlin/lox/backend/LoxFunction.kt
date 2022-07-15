@@ -4,13 +4,17 @@ import lox.frontend.ast.Stmt
 
 class LoxFunction(private val declaration: Stmt.Function, private val closure: Environment? = null, private val isInitializer: Boolean = false) : LoxCallable {
 
-    override fun arity(): Int = declaration.params.size
+    fun isGetter() = declaration.params == null
+
+    override fun arity(): Int = declaration.params?.size ?: 0
 
     override fun call(interpreter: Interpreter, arguments: List<Any?>): Any? {
 
         val environment = Environment(closure)
-        for (i in 0 until declaration.params.size) {
-            environment.define(declaration.params[i].lexeme, arguments[i])
+        if (declaration.params != null) {
+            for (i in 0 until declaration.params.size) {
+                environment.define(declaration.params[i].lexeme, arguments[i])
+            }
         }
 
         try {

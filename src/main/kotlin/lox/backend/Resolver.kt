@@ -86,7 +86,7 @@ class Resolver(private val interpreter: Interpreter): Expr.Visitor<Unit>, Stmt.V
         currentFunction = type
 
         beginScope()
-        stmt.params.forEach {
+        stmt.params?.forEach {
             declare(it)
             define(it)
         }
