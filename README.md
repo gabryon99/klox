@@ -33,7 +33,7 @@ forStmt         ::=     "for" "(" (varDecl | expression) ";" expression? ";" exp
 alterFlowStmt   ::=     "break" ";" 
 returnStmt      ::=     "return" expression? ";"
 
-function        ::=     IDENTIFIER "(" paramaters? ")" block
+function        ::=     "static"? IDENTIFIER "(" paramaters? ")" block
 paramaters      ::=     IDENTIFIER ("," IDENTIFIER)*
 
 expression      ::=     assignment

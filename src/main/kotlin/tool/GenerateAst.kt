@@ -79,7 +79,7 @@ fun main(args: Array<String>) {
         "Block         ; val stmts: List<Stmt?>",
         "While         ; val condition: Expr, val body: Stmt",
         "Break         ; val token: Token",
-        "Function      ; val name: Token, val params: List<Token>, val body: List<Stmt?>",
+        "Function      ; val name: Token, val params: List<Token>, val body: List<Stmt?>, val isStatic: Boolean = false",
         "Return        ; val keyword: Token, val value: Expr?",
         "Class         ; val name: Token, val methods: List<Stmt.Function>",
     ))

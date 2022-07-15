@@ -18,4 +18,5 @@ enum class TokenType {
     PRINT, RETURN, SUPER, THIS, TRUE, VAR, WHILE, BREAK,
 
     EOF,
+    STATIC,
 }

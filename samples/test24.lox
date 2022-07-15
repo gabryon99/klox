@@ -1,0 +1,11 @@
+class Math {
+    static square(n) {
+        return n * n;
+    }
+
+    instanceMethod(a, b) {
+        return a + b;
+    }
+}
+
+print Math.square(3);

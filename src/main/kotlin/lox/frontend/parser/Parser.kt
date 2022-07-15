@@ -106,6 +106,12 @@ class Parser(private val tokens: List<Token>) {
 
     private fun function(kind: String): Stmt.Function {
 
+        var isStatic = false
+        if (check(TokenType.STATIC)) {
+            consume(TokenType.STATIC, "...")
+            isStatic = true
+        }
+
         val name = consume(TokenType.IDENTIFIER, "Expect $kind name.")
         consume(TokenType.LEFT_PAREN, "Expect '(' after $kind name")
 
@@ -123,7 +129,7 @@ class Parser(private val tokens: List<Token>) {
 
         val body = block()
 
-        return Stmt.Function(name, parameters, body)
+        return Stmt.Function(name, parameters, body, isStatic)
     }
 
     private fun varDeclaration(): Stmt {

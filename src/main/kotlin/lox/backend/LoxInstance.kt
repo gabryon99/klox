@@ -2,7 +2,7 @@ package lox.backend
 
 import lox.frontend.common.Token
 
-class LoxInstance(private val loxClass: LoxClass) {
+open class LoxInstance(private val loxClass: LoxClass? = null) {
 
     private val fields = mutableMapOf<String, Any?>()
 
@@ -12,16 +12,16 @@ class LoxInstance(private val loxClass: LoxClass) {
             "${it.key}=${Interpreter.stringify(it.value)}"
         }
 
-        return "<class-instance ${loxClass.className}, fields: $fieldsList>"
+        return "<class-instance ${loxClass?.className}, fields: $fieldsList>"
     }
 
-    fun get(name: Token): Any? {
+    open fun get(name: Token): Any? {
 
         if (fields.containsKey(name.lexeme)) {
             return fields[name.lexeme]
         }
 
-        val method = loxClass.findMethod(name.lexeme)
+        val method = loxClass?.findMethod(name.lexeme)
         if (method != null) {
             return method.bind(this)
         }

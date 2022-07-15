@@ -181,6 +181,11 @@ class Resolver(private val interpreter: Interpreter): Expr.Visitor<Unit>, Stmt.V
             return
         }
 
+        if (currentFunction == FunctionType.STATIC_METHOD) {
+            Lox.error(expr.keyword, "Can't use this inside a static method.")
+            return
+        }
+
         resolveLocal(expr, expr.keyword)
     }
 
@@ -272,7 +277,11 @@ class Resolver(private val interpreter: Interpreter): Expr.Visitor<Unit>, Stmt.V
         stmt.methods.forEach {
             val declaration = if (it.name.lexeme == "init") {
                FunctionType.INITIALIZER
-            } else {
+            }
+            else if (it.isStatic) {
+                FunctionType.STATIC_METHOD
+            }
+            else {
                 FunctionType.METHOD
             }
 

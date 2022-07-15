@@ -24,7 +24,8 @@ class Scanner(private val source: String) {
             "true"      to TokenType.TRUE,
             "var"       to TokenType.VAR,
             "while"     to TokenType.WHILE,
-            "break"     to TokenType.BREAK
+            "break"     to TokenType.BREAK,
+            "static"    to TokenType.STATIC
         )
     }
 

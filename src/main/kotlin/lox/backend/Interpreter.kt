@@ -246,6 +246,7 @@ class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
     override fun visitGetExpr(expr: Expr.Get): Any? {
 
         val obj = evaluate(expr.obj)
+
         if (obj is LoxInstance) {
             return obj.get(expr.name)
         }
