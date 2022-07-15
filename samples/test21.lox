@@ -1,0 +1,9 @@
+class Egoist {
+    speak() {
+        print this;
+    }
+}
+
+var selfish = Egoist();
+var method = selfish.speak;
+method();

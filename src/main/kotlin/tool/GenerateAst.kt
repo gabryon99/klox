@@ -67,7 +67,8 @@ fun main(args: Array<String>) {
         "Unary     ; val operator: Token, val right: Expr",
         "Lambda    ; val params: List<Token>, val body: List<Stmt?>",
         "Get       ; val obj: Expr, val name: Token",
-        "Set       ; val obj: Expr, val name: Token, val value: Expr"
+        "Set       ; val obj: Expr, val name: Token, val value: Expr",
+        "This      ; val keyword: Token"
     ))
 
     defineAst(outputDir, "Stmt", listOf(

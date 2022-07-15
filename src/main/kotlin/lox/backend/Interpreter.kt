@@ -5,6 +5,7 @@ import lox.frontend.ast.Expr
 import lox.frontend.ast.Stmt
 import lox.frontend.common.Token
 import lox.frontend.common.TokenType
+import kotlin.math.exp
 
 class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
 
@@ -209,7 +210,7 @@ class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
         return lookupVariable(expr.name, expr)
     }
 
-    private fun lookupVariable(name: Token, expr: Expr.Variable): Any? {
+    private fun lookupVariable(name: Token, expr: Expr): Any? {
         val distance = locals[expr]
         if (distance != null) {
             return environment.getAt(distance, name.lexeme)
@@ -263,6 +264,10 @@ class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
         obj.set(expr.name, value)
 
         return value
+    }
+
+    override fun visitThisExpr(expr: Expr.This): Any? {
+        return lookupVariable(expr.keyword, expr)
     }
 
     private fun checkNumberOperand(operator: Token, right: Any?) {

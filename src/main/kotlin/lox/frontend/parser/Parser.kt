@@ -415,14 +415,12 @@ class Parser(private val tokens: List<Token>) {
         var expr = primary()
 
         while (true) {
-            if (match(TokenType.LEFT_PAREN)) {
-                expr = finishCall(expr)
-            }
-            else if (match(TokenType.DOT)) {
+            expr = if (match(TokenType.LEFT_PAREN)) {
+                finishCall(expr)
+            } else if (match(TokenType.DOT)) {
                 val name = consume(TokenType.IDENTIFIER, "Expect a property name after '.'.")
-                expr = Expr.Get(expr, name)
-            }
-            else {
+                Expr.Get(expr, name)
+            } else {
                 break
             }
         }
@@ -454,7 +452,7 @@ class Parser(private val tokens: List<Token>) {
         if (match(TokenType.FALSE)) return Expr.Literal(false)
         if (match(TokenType.TRUE)) return Expr.Literal(true)
         if (match(TokenType.NIL)) return Expr.Literal(null)
-
+        if (match(TokenType.THIS)) return Expr.This(previous())
         if (match(TokenType.IDENTIFIER)) return Expr.Variable(previous())
 
         if (match(TokenType.FUN)) {

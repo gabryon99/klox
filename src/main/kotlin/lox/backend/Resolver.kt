@@ -4,6 +4,7 @@ import lox.Lox
 import lox.frontend.ast.Expr
 import lox.frontend.ast.Stmt
 import lox.frontend.common.Token
+import lox.frontend.common.TokenType
 import java.util.*
 import kotlin.collections.HashMap
 
@@ -172,6 +173,10 @@ class Resolver(private val interpreter: Interpreter): Expr.Visitor<Unit>, Stmt.V
         resolve(expr.obj)
     }
 
+    override fun visitThisExpr(expr: Expr.This) {
+        resolveLocal(expr, expr.keyword)
+    }
+
     override fun visitExpressionStmt(stmt: Stmt.Expression) {
         resolve(stmt.expr)
     }
@@ -246,13 +251,14 @@ class Resolver(private val interpreter: Interpreter): Expr.Visitor<Unit>, Stmt.V
     override fun visitClassStmt(stmt: Stmt.Class) {
         declare(stmt.name)
 
+        beginScope()
+        scopes.peek()[Token(TokenType.THIS, "this", null, -1)] = true
         stmt.methods.forEach {
             val declaration = FunctionType.METHOD
             resolveFunction(it, declaration)
         }
+        endScope()
 
         define(stmt.name)
     }
-
-
 }
