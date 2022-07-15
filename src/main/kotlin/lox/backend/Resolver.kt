@@ -163,6 +163,10 @@ class Resolver(private val interpreter: Interpreter): Expr.Visitor<Unit>, Stmt.V
         resolveLambda(expr, FunctionType.FUNCTION)
     }
 
+    override fun visitGetExpr(expr: Expr.Get) {
+        resolve(expr.obj)
+    }
+
     override fun visitExpressionStmt(stmt: Stmt.Expression) {
         resolve(stmt.expr)
     }

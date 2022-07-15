@@ -80,4 +80,8 @@ class AstIpnPrinter : Expr.Visitor<String> {
         TODO("Not yet implemented")
     }
 
+    override fun visitGetExpr(expr: Expr.Get): String {
+        TODO("Not yet implemented")
+    }
+
 }

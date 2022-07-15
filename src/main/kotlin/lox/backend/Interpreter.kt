@@ -235,6 +235,16 @@ class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
         return LoxLambdaFunction(expr, environment)
     }
 
+    override fun visitGetExpr(expr: Expr.Get): Any? {
+
+        val obj = evaluate(expr.obj)
+        if (obj is LoxInstance) {
+            return obj.get(expr.name)
+        }
+
+        throw RuntimeError(expr.name, "Only instances of classes have properties.")
+    }
+
     private fun checkNumberOperand(operator: Token, right: Any?) {
         if (right !is Double) throw RuntimeError(operator, "Operand must be a number")
     }

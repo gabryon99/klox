@@ -415,6 +415,10 @@ class Parser(private val tokens: List<Token>) {
             if (match(TokenType.LEFT_PAREN)) {
                 expr = finishCall(expr)
             }
+            else if (match(TokenType.DOT)) {
+                val name = consume(TokenType.IDENTIFIER, "Expect a property name after '.'.")
+                expr = Expr.Get(expr, name)
+            }
             else {
                 break
             }
