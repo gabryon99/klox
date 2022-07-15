@@ -16,4 +16,8 @@ class LoxInstance(private val loxClass: LoxClass) {
         }
         throw RuntimeError(name, "Undefined property ${name.lexeme}.")
     }
+
+    fun set(name: Token, value: Any?) {
+        fields[name.lexeme] = value
+    }
 }

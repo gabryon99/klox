@@ -10,4 +10,10 @@ class Breakfast {
 
 print Breakfast;
 
-print Breakfast();
+var br = Breakfast();
+
+br.eggs = 1;
+br.waffles = 20;
+
+print br.eggs;
+print "We have " + stringify(br.eggs) + " egg(s) available!";

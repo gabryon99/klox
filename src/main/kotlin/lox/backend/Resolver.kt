@@ -167,6 +167,11 @@ class Resolver(private val interpreter: Interpreter): Expr.Visitor<Unit>, Stmt.V
         resolve(expr.obj)
     }
 
+    override fun visitSetExpr(expr: Expr.Set) {
+        resolve(expr.value)
+        resolve(expr.obj)
+    }
+
     override fun visitExpressionStmt(stmt: Stmt.Expression) {
         resolve(stmt.expr)
     }

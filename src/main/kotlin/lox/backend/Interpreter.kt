@@ -20,6 +20,12 @@ class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
                 return (System.currentTimeMillis().toDouble() / 1000.0)
             }
         })
+        globals.define("stringify", object: LoxCallable {
+            override fun arity(): Int = 1
+            override fun call(interpreter: Interpreter, arguments: List<Any?>): Any? {
+                return stringify(arguments[0])
+            }
+        })
     }
 
     fun interpret(statements: List<Stmt?>) {
@@ -243,6 +249,20 @@ class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
         }
 
         throw RuntimeError(expr.name, "Only instances of classes have properties.")
+    }
+
+    override fun visitSetExpr(expr: Expr.Set): Any? {
+
+        val obj = evaluate(expr.obj)
+
+        if (obj !is LoxInstance) {
+            throw RuntimeError(expr.name, "Only instances have fields.")
+        }
+
+        val value = evaluate(expr.value)
+        obj.set(expr.name, value)
+
+        return value
     }
 
     private fun checkNumberOperand(operator: Token, right: Any?) {
