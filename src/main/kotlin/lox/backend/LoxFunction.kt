@@ -4,8 +4,6 @@ import lox.frontend.ast.Stmt
 
 class LoxFunction(private val declaration: Stmt.Function, private val closure: Environment? = null, private val isInitializer: Boolean = false) : LoxCallable {
 
-    fun isStatic() = declaration.isStatic
-
     override fun arity(): Int = declaration.params.size
 
     override fun call(interpreter: Interpreter, arguments: List<Any?>): Any? {

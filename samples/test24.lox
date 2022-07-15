@@ -8,4 +8,7 @@ class Math {
     }
 }
 
+Math.pi = 3.14;
+
 print Math.square(3);
+print Math.pi;

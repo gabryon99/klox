@@ -1,8 +1,9 @@
 package lox.backend
 
-import lox.frontend.common.Token
-
-class LoxClass(val className: String, private val methods: Map<String, LoxFunction>) : LoxInstance(), LoxCallable {
+class LoxClass(
+    val className: String,
+    private val methods: Map<String, LoxFunction>,
+    metaclass: LoxClass? = null) : LoxInstance(metaclass), LoxCallable {
 
     override fun arity(): Int {
         val initializer = findMethod("init")
@@ -19,27 +20,6 @@ class LoxClass(val className: String, private val methods: Map<String, LoxFuncti
 
     override fun toString(): String {
         return "<class $className>"
-    }
-
-    override fun get(name: Token): Any? {
-
-        // Lookup for static method
-        if (methods.containsKey(name.lexeme)) {
-
-            val method = methods[name.lexeme]
-
-            if (method != null) {
-                if (method.isStatic()) {
-                    return method
-                }
-                else {
-                    throw RuntimeError(name, "Instance method '${name.lexeme}' cannot be invoked by class.")
-                }
-            }
-
-        }
-
-        throw RuntimeError(name, "Undefined property ${name.lexeme}.")
     }
 
     fun findMethod(name: String): LoxFunction? {

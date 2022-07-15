@@ -94,23 +94,24 @@ class Parser(private val tokens: List<Token>) {
         consume(TokenType.LEFT_BRACE, "Expect '{' after class name '${name.lexeme}'.")
 
         val methods = mutableListOf<Stmt.Function>()
+        val classMethods = mutableListOf<Stmt.Function>()
 
         while (!check(TokenType.RIGHT_BRACE) && !isAtEnd()) {
-            methods.add(function("method"))
+            val isClassMethod = match(TokenType.STATIC)
+            if (isClassMethod) {
+                classMethods.add(function("static method"))
+            }
+            else {
+                methods.add(function("method"))
+            }
         }
 
         consume(TokenType.RIGHT_BRACE, "Expect '}' after class ${name.lexeme} declaration.")
 
-        return Stmt.Class(name, methods)
+        return Stmt.Class(name, methods, classMethods)
     }
 
     private fun function(kind: String): Stmt.Function {
-
-        var isStatic = false
-        if (check(TokenType.STATIC)) {
-            consume(TokenType.STATIC, "...")
-            isStatic = true
-        }
 
         val name = consume(TokenType.IDENTIFIER, "Expect $kind name.")
         consume(TokenType.LEFT_PAREN, "Expect '(' after $kind name")
@@ -129,7 +130,7 @@ class Parser(private val tokens: List<Token>) {
 
         val body = block()
 
-        return Stmt.Function(name, parameters, body, isStatic)
+        return Stmt.Function(name, parameters, body)
     }
 
     private fun varDeclaration(): Stmt {

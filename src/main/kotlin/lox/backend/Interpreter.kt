@@ -356,16 +356,28 @@ class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
     }
 
     override fun visitClassStmt(stmt: Stmt.Class) {
+
         environment.define(stmt.name.lexeme, null)
 
+        // Let's build metaclass
+        val classMethods = mutableMapOf<String, LoxFunction>()
+        stmt.classMethods.forEach {
+            val function = LoxFunction(it, environment)
+            classMethods[it.name.lexeme] = function
+        }
+
+        val metaclass = LoxClass("${stmt.name.lexeme}-metaclass", classMethods)
+
+        // Build normal class
         val methods = mutableMapOf<String, LoxFunction>()
         stmt.methods.forEach {
             val function = LoxFunction(it, environment, it.name.lexeme == "init")
             methods[it.name.lexeme] = function
         }
 
-        val clazz = LoxClass(stmt.name.lexeme, methods)
+        val clazz = LoxClass(stmt.name.lexeme, methods, metaclass)
         environment.assign(stmt.name, clazz)
+
         return
     }
 
