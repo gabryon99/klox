@@ -2,7 +2,7 @@ package lox.backend
 
 import lox.frontend.ast.Stmt
 
-class LoxFunction(private val declaration: Stmt.Function, private val closure: Environment? = null) : LoxCallable {
+class LoxFunction(private val declaration: Stmt.Function, private val closure: Environment? = null, private val isInitializer: Boolean = false) : LoxCallable {
 
     override fun arity(): Int = declaration.params.size
 
@@ -17,8 +17,11 @@ class LoxFunction(private val declaration: Stmt.Function, private val closure: E
             interpreter.executeBlock(Stmt.Block(declaration.body), environment)
         }
         catch (returnValue: Return) {
+            if (isInitializer) return closure?.getAt(0, "this")
             return returnValue.value
         }
+
+        if (isInitializer) return closure?.getAt(0, "this")
 
         return null
     }
@@ -27,7 +30,7 @@ class LoxFunction(private val declaration: Stmt.Function, private val closure: E
         return "<fn ${declaration.name.lexeme}>"
     }
 
-    fun bind(loxInstance: LoxInstance): Any? {
+    fun bind(loxInstance: LoxInstance): LoxFunction {
         val environment = Environment(closure)
         environment.define("this", loxInstance)
         return LoxFunction(declaration, environment)

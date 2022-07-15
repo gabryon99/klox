@@ -1,0 +1,10 @@
+class Foo {
+    init() {
+        this.a = 20;
+        this.b = 40;
+        this.c = 60;
+    }
+}
+
+var foo = Foo();
+print foo;

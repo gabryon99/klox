@@ -5,13 +5,29 @@ import lox.frontend.ast.Expr
 import lox.frontend.ast.Stmt
 import lox.frontend.common.Token
 import lox.frontend.common.TokenType
-import kotlin.math.exp
 
 class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
 
     private val globals = Environment()
     private var environment = globals
     private val locals = mutableMapOf<Expr, Int>()
+
+    companion object {
+        fun stringify(value: Any?): String {
+
+            if (value == null) return "null"
+
+            if (value is Double) {
+                var text = value.toString()
+                if (text.endsWith(".0")) {
+                    text = text.substring(0, text.length - 2)
+                }
+                return text
+            }
+
+            return value.toString()
+        }
+    }
 
     init {
         globals.define("clock", object: LoxCallable {
@@ -42,21 +58,6 @@ class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
 
     private fun execute(it: Stmt) {
         it.accept(this)
-    }
-
-    fun stringify(value: Any?): String {
-
-        if (value == null) return "null"
-
-        if (value is Double) {
-            var text = value.toString()
-            if (text.endsWith(".0")) {
-                text = text.substring(0, text.length - 2)
-            }
-            return text
-        }
-
-        return value.toString()
     }
 
     override fun visitAssignExpr(expr: Expr.Assign): Any? {
@@ -358,7 +359,7 @@ class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
 
         val methods = mutableMapOf<String, LoxFunction>()
         stmt.methods.forEach {
-            val function = LoxFunction(it, environment)
+            val function = LoxFunction(it, environment, it.name.lexeme == "init")
             methods[it.name.lexeme] = function
         }
 

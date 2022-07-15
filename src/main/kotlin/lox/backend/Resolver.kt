@@ -252,7 +252,12 @@ class Resolver(private val interpreter: Interpreter): Expr.Visitor<Unit>, Stmt.V
             Lox.error(stmt.keyword, "Can't return from top-level code.")
         }
 
-        if (stmt.value != null) resolve(stmt.value)
+        if (stmt.value != null) {
+            if (currentFunction == FunctionType.INITIALIZER) {
+                Lox.error(stmt.keyword, "Can't return a value from an initializer.")
+            }
+            resolve(stmt.value)
+        }
     }
 
     override fun visitClassStmt(stmt: Stmt.Class) {
@@ -265,7 +270,12 @@ class Resolver(private val interpreter: Interpreter): Expr.Visitor<Unit>, Stmt.V
         beginScope()
         scopes.peek()[Token(TokenType.THIS, "this", null, -1)] = true
         stmt.methods.forEach {
-            val declaration = FunctionType.METHOD
+            val declaration = if (it.name.lexeme == "init") {
+               FunctionType.INITIALIZER
+            } else {
+                FunctionType.METHOD
+            }
+
             resolveFunction(it, declaration)
         }
         endScope()

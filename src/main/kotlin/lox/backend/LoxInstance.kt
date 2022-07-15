@@ -7,7 +7,12 @@ class LoxInstance(private val loxClass: LoxClass) {
     private val fields = mutableMapOf<String, Any?>()
 
     override fun toString(): String {
-        return "<class-instance ${loxClass.className}>"
+        // Prints also fields
+        val fieldsList = fields.map {
+            "${it.key}=${Interpreter.stringify(it.value)}"
+        }
+
+        return "<class-instance ${loxClass.className}, fields: $fieldsList>"
     }
 
     fun get(name: Token): Any? {

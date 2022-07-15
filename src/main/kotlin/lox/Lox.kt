@@ -55,7 +55,7 @@ class Lox {
                 // Check if we succeed to parse an expression
                 val expr = parser.parseExpression()
                 if (!hadError && expr != null) {
-                    println(interpreter.stringify(interpreter.evaluate(expr)))
+                    println(Interpreter.stringify(interpreter.evaluate(expr)))
                     return
                 }
             }
