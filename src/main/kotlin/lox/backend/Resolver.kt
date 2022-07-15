@@ -14,6 +14,7 @@ class Resolver(private val interpreter: Interpreter): Expr.Visitor<Unit>, Stmt.V
     private val usedVariables = mutableMapOf<Token, Boolean>()
 
     private var currentFunction = FunctionType.NONE
+    private var currentClass = ClassType.NONE
     private var loopDepth = 0
 
     fun globalResolve(stmts: List<Stmt?>) {
@@ -174,6 +175,12 @@ class Resolver(private val interpreter: Interpreter): Expr.Visitor<Unit>, Stmt.V
     }
 
     override fun visitThisExpr(expr: Expr.This) {
+
+        if (currentClass == ClassType.NONE) {
+            Lox.error(expr.keyword, "Can't use 'this' outside of a class.")
+            return
+        }
+
         resolveLocal(expr, expr.keyword)
     }
 
@@ -249,6 +256,10 @@ class Resolver(private val interpreter: Interpreter): Expr.Visitor<Unit>, Stmt.V
     }
 
     override fun visitClassStmt(stmt: Stmt.Class) {
+
+        val enclosingClass = currentClass
+        currentClass = ClassType.CLASS
+
         declare(stmt.name)
 
         beginScope()
@@ -260,5 +271,7 @@ class Resolver(private val interpreter: Interpreter): Expr.Visitor<Unit>, Stmt.V
         endScope()
 
         define(stmt.name)
+
+        currentClass = enclosingClass
     }
 }
