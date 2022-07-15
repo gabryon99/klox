@@ -5,6 +5,8 @@ import lox.frontend.ast.Expr
 import lox.frontend.ast.Stmt
 import lox.frontend.common.Token
 import lox.frontend.common.TokenType
+import java.util.Scanner
+import kotlin.math.pow
 
 class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
 
@@ -14,13 +16,11 @@ class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
 
     init {
         globals.define("clock", object: LoxCallable {
-
             override fun arity(): Int = 0
 
             override fun call(interpreter: Interpreter, arguments: List<Any?>): Any {
                 return (System.currentTimeMillis().toDouble() / 1000.0)
             }
-
         })
     }
 

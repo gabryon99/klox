@@ -9,9 +9,18 @@ import kotlin.collections.HashMap
 
 class Resolver(private val interpreter: Interpreter): Expr.Visitor<Unit>, Stmt.Visitor<Unit> {
 
-    private val scopes: Stack<HashMap<String, Boolean>> = Stack();
+    private val scopes: Stack<HashMap<Token, Boolean>> = Stack()
+    private val usedVariables = mutableMapOf<Token, Boolean>()
+
     private var currentFunction = FunctionType.NONE
     private var loopDepth = 0
+
+    fun globalResolve(stmts: List<Stmt?>) {
+        beginScope()
+        resolve(stmts)
+        checkUnusedVariables()
+        endScope()
+    }
 
     private fun resolve(expr: Expr) {
         expr.accept(this)
@@ -21,12 +30,21 @@ class Resolver(private val interpreter: Interpreter): Expr.Visitor<Unit>, Stmt.V
         stmt.accept(this)
     }
 
-    fun resolve(stmts: List<Stmt?>) {
+    private fun resolve(stmts: List<Stmt?>) {
         stmts.forEach { it?.let { resolve(it) } }
     }
 
     private fun endScope() {
         scopes.pop()
+    }
+
+    private fun checkUnusedVariables() {
+        // Is there a variable defined but not initialized?
+        usedVariables.forEach {
+            if (!it.value) {
+                Lox.error(it.key, "Variable '${it.key.lexeme}' declared but never used.")
+            }
+        }
     }
 
     private fun beginScope() {
@@ -39,21 +57,21 @@ class Resolver(private val interpreter: Interpreter): Expr.Visitor<Unit>, Stmt.V
         val scope = scopes.peek()
 
         // Avoid name collision in the same scope (alias: no shadowing)
-        if (scope.containsKey(name.lexeme)) {
+        if (scope.containsKey(name)) {
             Lox.error(name, "Already a variable with this name in this scope.")
         }
 
-        scope[name.lexeme] = false
+        scope[name] = false
     }
 
     private fun define(name: Token) {
         if (scopes.isEmpty()) return
-        scopes.peek()[name.lexeme] = true
+        scopes.peek()[name] = true
     }
 
     private fun resolveLocal(expr: Expr, name: Token) {
         for (i in scopes.size - 1 downTo 0) {
-            if (scopes[i].containsKey(name.lexeme)) {
+            if (scopes[i].containsKey(name)) {
                 interpreter.resolve(expr, scopes.size - 1 - i)
                 return
             }
@@ -130,10 +148,10 @@ class Resolver(private val interpreter: Interpreter): Expr.Visitor<Unit>, Stmt.V
     }
 
     override fun visitVariableExpr(expr: Expr.Variable) {
-        if (!scopes.isEmpty() && scopes.peek()[expr.name.lexeme] == false) {
+        if (!scopes.isEmpty() && scopes.peek()[expr.name] == false) {
             Lox.error(expr.name, "Can't read local variable in its own initializer.")
         }
-
+        markUsedVariable(expr)
         resolveLocal(expr, expr.name)
     }
 
@@ -167,6 +185,19 @@ class Resolver(private val interpreter: Interpreter): Expr.Visitor<Unit>, Stmt.V
             resolve(stmt.initializer)
         }
         define(stmt.name)
+        markUsedVariable(stmt)
+    }
+
+    private fun markUsedVariable(stmt: Stmt.Var) {
+        if (!usedVariables.containsKey(stmt.name)) {
+            usedVariables[stmt.name] = false
+        }
+    }
+
+    private fun markUsedVariable(expr: Expr.Variable) {
+        if (usedVariables.containsKey(expr.name)) {
+            usedVariables[expr.name] = true
+        }
     }
 
     override fun visitBlockStmt(stmt: Stmt.Block) {

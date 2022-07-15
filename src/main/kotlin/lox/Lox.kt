@@ -65,7 +65,7 @@ class Lox {
             if (hadError) return
 
             val resolver = Resolver(interpreter)
-            resolver.resolve(statements)
+            resolver.globalResolve(statements)
 
             if (hadError) return
 
