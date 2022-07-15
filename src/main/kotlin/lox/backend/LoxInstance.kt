@@ -11,9 +11,16 @@ class LoxInstance(private val loxClass: LoxClass) {
     }
 
     fun get(name: Token): Any? {
+
         if (fields.containsKey(name.lexeme)) {
             return fields[name.lexeme]
         }
+
+        val method = loxClass.findMethod(name.lexeme)
+        if (method != null) {
+            return method
+        }
+
         throw RuntimeError(name, "Undefined property ${name.lexeme}.")
     }
 

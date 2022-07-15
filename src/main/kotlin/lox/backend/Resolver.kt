@@ -245,6 +245,12 @@ class Resolver(private val interpreter: Interpreter): Expr.Visitor<Unit>, Stmt.V
 
     override fun visitClassStmt(stmt: Stmt.Class) {
         declare(stmt.name)
+
+        stmt.methods.forEach {
+            val declaration = FunctionType.METHOD
+            resolveFunction(it, declaration)
+        }
+
         define(stmt.name)
     }
 

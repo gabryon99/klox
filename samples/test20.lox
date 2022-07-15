@@ -17,3 +17,5 @@ br.waffles = 20;
 
 print br.eggs;
 print "We have " + stringify(br.eggs) + " egg(s) available!";
+
+br.serve("Gabriele");
