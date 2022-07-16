@@ -68,6 +68,7 @@ fun main(args: Array<String>) {
         "Lambda    ; val params: List<Token>, val body: List<Stmt?>",
         "Get       ; val obj: Expr, val name: Token",
         "Set       ; val obj: Expr, val name: Token, val value: Expr",
+        "Super     ; val keyword: Token, val method: Token",
         "This      ; val keyword: Token"
     ))
 
@@ -81,6 +82,6 @@ fun main(args: Array<String>) {
         "Break         ; val token: Token",
         "Function      ; val name: Token, val params: List<Token>?, val body: List<Stmt?>",
         "Return        ; val keyword: Token, val value: Expr?",
-        "Class         ; val name: Token, val methods: List<Stmt.Function>, val classMethods: List<Stmt.Function>",
+        "Class         ; val name: Token, val methods: List<Stmt.Function>, val classMethods: List<Stmt.Function>, val superclass: Expr.Variable?",
     ))
 }

@@ -39,7 +39,7 @@ class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
         })
         globals.define("stringify", object: LoxCallable {
             override fun arity(): Int = 1
-            override fun call(interpreter: Interpreter, arguments: List<Any?>): Any? {
+            override fun call(interpreter: Interpreter, arguments: List<Any?>): Any {
                 return stringify(arguments[0])
             }
         })
@@ -272,6 +272,23 @@ class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
         return value
     }
 
+    override fun visitSuperExpr(expr: Expr.Super): Any {
+
+        val distance = locals[expr]
+
+        if (distance != null) {
+
+            val superclass = environment.getAt(distance, "super") as LoxClass
+            val obj = environment.getAt(distance - 1, "this") as LoxInstance
+            val method = superclass.findMethod(expr.method.lexeme)
+                ?: throw RuntimeError(expr.method, "Undefined property '${expr.method.lexeme}'.")
+
+            return method.bind(obj)
+        }
+
+        throw RuntimeError(expr.keyword, "Should not happen.")
+    }
+
     override fun visitThisExpr(expr: Expr.This): Any? {
         return lookupVariable(expr.keyword, expr)
     }
@@ -361,7 +378,20 @@ class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
 
     override fun visitClassStmt(stmt: Stmt.Class) {
 
+        var superclass: Any? = null
+        if (stmt.superclass != null) {
+            superclass = evaluate(stmt.superclass)
+            if (superclass !is LoxClass) {
+                throw RuntimeError(stmt.superclass.name, "Superclass must be a class.")
+            }
+        }
+
         environment.define(stmt.name.lexeme, null)
+
+        if (stmt.superclass != null) {
+            environment = Environment(environment)
+            environment.define("super", superclass)
+        }
 
         // Let's build metaclass
         val classMethods = mutableMapOf<String, LoxFunction>()
@@ -370,7 +400,7 @@ class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
             classMethods[it.name.lexeme] = function
         }
 
-        val metaclass = LoxClass("${stmt.name.lexeme}-metaclass", classMethods)
+        val metaclass = LoxClass("${stmt.name.lexeme}-metaclass", classMethods, null, null)
 
         // Build normal class
         val methods = mutableMapOf<String, LoxFunction>()
@@ -379,7 +409,12 @@ class Interpreter : Expr.Visitor<Any?>, Stmt.Visitor<Unit> {
             methods[it.name.lexeme] = function
         }
 
-        val clazz = LoxClass(stmt.name.lexeme, methods, metaclass)
+        val clazz = LoxClass(stmt.name.lexeme, methods, metaclass, (superclass as LoxClass?))
+
+        if (superclass != null) {
+            environment = environment.enclosing!!
+        }
+
         environment.assign(stmt.name, clazz)
 
         return

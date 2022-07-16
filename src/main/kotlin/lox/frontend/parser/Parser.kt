@@ -91,6 +91,13 @@ class Parser(private val tokens: List<Token>) {
     private fun classDeclaration(): Stmt {
 
         val name = consume(TokenType.IDENTIFIER, "Expect a class name after 'class' keyword.")
+
+        var superclass: Expr.Variable? = null
+        if (match(TokenType.EXTENDS)) {
+            consume(TokenType.IDENTIFIER, "Expect superclass name.")
+            superclass = Expr.Variable(previous())
+        }
+
         consume(TokenType.LEFT_BRACE, "Expect '{' after class name '${name.lexeme}'.")
 
         val methods = mutableListOf<Stmt.Function>()
@@ -108,7 +115,7 @@ class Parser(private val tokens: List<Token>) {
 
         consume(TokenType.RIGHT_BRACE, "Expect '}' after class ${name.lexeme} declaration.")
 
-        return Stmt.Class(name, methods, classMethods)
+        return Stmt.Class(name, methods, classMethods, superclass)
     }
 
     private fun function(kind: String): Stmt.Function {
@@ -468,6 +475,12 @@ class Parser(private val tokens: List<Token>) {
         if (match(TokenType.TRUE)) return Expr.Literal(true)
         if (match(TokenType.NIL)) return Expr.Literal(null)
         if (match(TokenType.THIS)) return Expr.This(previous())
+        if (match(TokenType.SUPER)) {
+            val keyword = previous()
+            consume(TokenType.DOT, "Expect '.' after 'super'.")
+            val method = consume(TokenType.IDENTIFIER, "Expect superclass method name.")
+            return Expr.Super(keyword, method)
+        }
         if (match(TokenType.IDENTIFIER)) return Expr.Variable(previous())
 
         if (match(TokenType.FUN)) {

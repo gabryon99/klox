@@ -3,7 +3,9 @@ package lox.backend
 class LoxClass(
     val className: String,
     private val methods: Map<String, LoxFunction>,
-    metaclass: LoxClass? = null) : LoxInstance(metaclass), LoxCallable {
+    metaclass: LoxClass? = null,
+    private val superclass: LoxClass?
+) : LoxInstance(metaclass), LoxCallable {
 
     override fun arity(): Int {
         val initializer = findMethod("init")
@@ -26,6 +28,10 @@ class LoxClass(
 
         if (methods.containsKey(name)) {
             return methods[name]
+        }
+
+        if (superclass != null) {
+            return superclass.findMethod(name)
         }
 
         return null

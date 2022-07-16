@@ -4,13 +4,12 @@ import lox.Lox
 import lox.frontend.ast.Expr
 import lox.frontend.ast.Stmt
 import lox.frontend.common.Token
-import lox.frontend.common.TokenType
 import java.util.*
 import kotlin.collections.HashMap
 
 class Resolver(private val interpreter: Interpreter): Expr.Visitor<Unit>, Stmt.Visitor<Unit> {
 
-    private val scopes: Stack<HashMap<Token, Boolean>> = Stack()
+    private val scopes: Stack<HashMap<String, Boolean>> = Stack()
     private val usedVariables = mutableMapOf<Token, Boolean>()
 
     private var currentFunction = FunctionType.NONE
@@ -59,21 +58,21 @@ class Resolver(private val interpreter: Interpreter): Expr.Visitor<Unit>, Stmt.V
         val scope = scopes.peek()
 
         // Avoid name collision in the same scope (alias: no shadowing)
-        if (scope.containsKey(name)) {
+        if (scope.containsKey(name.lexeme)) {
             Lox.error(name, "Already a variable with this name in this scope.")
         }
 
-        scope[name] = false
+        scope[name.lexeme] = false
     }
 
     private fun define(name: Token) {
         if (scopes.isEmpty()) return
-        scopes.peek()[name] = true
+        scopes.peek()[name.lexeme] = true
     }
 
     private fun resolveLocal(expr: Expr, name: Token) {
         for (i in scopes.size - 1 downTo 0) {
-            if (scopes[i].containsKey(name)) {
+            if (scopes[i].containsKey(name.lexeme)) {
                 interpreter.resolve(expr, scopes.size - 1 - i)
                 return
             }
@@ -150,7 +149,7 @@ class Resolver(private val interpreter: Interpreter): Expr.Visitor<Unit>, Stmt.V
     }
 
     override fun visitVariableExpr(expr: Expr.Variable) {
-        if (!scopes.isEmpty() && scopes.peek()[expr.name] == false) {
+        if (!scopes.isEmpty() && scopes.peek()[expr.name.lexeme] == false) {
             Lox.error(expr.name, "Can't read local variable in its own initializer.")
         }
         markUsedVariable(expr)
@@ -172,6 +171,16 @@ class Resolver(private val interpreter: Interpreter): Expr.Visitor<Unit>, Stmt.V
     override fun visitSetExpr(expr: Expr.Set) {
         resolve(expr.value)
         resolve(expr.obj)
+    }
+
+    override fun visitSuperExpr(expr: Expr.Super) {
+        if (currentClass == ClassType.NONE) {
+            Lox.error(expr.keyword, "Can't use 'super' outside of a class.")
+        }
+        else if (currentClass == ClassType.CLASS) {
+            Lox.error(expr.keyword, "Can't use 'super' in a class with no superclass.")
+        }
+        resolveLocal(expr, expr.keyword)
     }
 
     override fun visitThisExpr(expr: Expr.This) {
@@ -267,9 +276,19 @@ class Resolver(private val interpreter: Interpreter): Expr.Visitor<Unit>, Stmt.V
 
         declare(stmt.name)
 
+        if (stmt.superclass != null) {
+            currentClass = ClassType.SUBCLASS
+            resolve(stmt.superclass)
+        }
+
+        if (stmt.superclass != null) {
+            beginScope()
+            scopes.peek()["super"] = true
+        }
+
         beginScope()
 
-        scopes.peek()[Token(TokenType.THIS, "this", null, -1)] = true
+        scopes.peek()["this"] = true
         stmt.methods.forEach {
             val declaration = if (it.name.lexeme == "init") {
                FunctionType.INITIALIZER
@@ -285,7 +304,14 @@ class Resolver(private val interpreter: Interpreter): Expr.Visitor<Unit>, Stmt.V
 
         endScope()
 
+        if (stmt.superclass != null) {
+            endScope()
+        }
+
         define(stmt.name)
+        if (stmt.superclass != null && stmt.superclass.name.lexeme == stmt.name.lexeme) {
+            Lox.error(stmt.superclass.name, "A class can't inherit from itself.")
+        }
 
         currentClass = enclosingClass
     }

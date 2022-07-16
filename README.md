@@ -19,7 +19,7 @@ program         ::=     declaration* EOF
 
 declaration     ::=     classDecl | varDecl | funDecl | statement 
 
-classDecl       ::=     "class" IDENTIFIER "{" function* "}"
+classDecl       ::=     "class" IDENTIFIER ("<:" IDENTIFIER)? "{" function* "}"
 varDecl         ::=     "var" IDENTIFIER ("=" expression)? ";"
 funDecl         ::      "fun" function
 statement       ::=     exprStmr | printStmt | ifStmt | whileStmt | block | alterFlowStmt | returnStmt
@@ -47,6 +47,6 @@ factor          ::=     unary (("/" | "*") unary)*
 unary           ::=     ("!" | "-") unary | call
 call            ::=     primary ( "(" arguments ? ")" | "." IDENTIFIER )* 
 arguments       ::=     expression ("," expression)*
-primary         ::=     NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" | IDENTIFIER | lambda
+primary         ::=     NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" | IDENTIFIER | lambda | "super" "." IDENTIFIER
 lambda          ::=     "fun" "(" parameters? ")" block
 ```
